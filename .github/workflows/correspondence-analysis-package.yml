@@ -26,7 +26,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        poetry install --no-dev --no-root
+        poetry install --no-root
     
     - name: Run linting
       run: poetry run python -m flake8 .
