@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Optional
 
 import numpy as np
@@ -5,6 +6,16 @@ import pandas as pd
 import statsmodels.api as sm
 
 from src.types import TableType
+
+
+@dataclass
+class Dimension:
+    """Container class for dimensional summary statistics of a contingency object."""
+
+    name: str
+    levels: np.ndarray
+    counts: np.ndarray
+    proportions: np.ndarray
 
 
 class ContingencyTable(sm.stats.Table):
@@ -19,6 +30,17 @@ class ContingencyTable(sm.stats.Table):
             Contingency table of frequencies.
         """
         super(ContingencyTable, self).__init__(table, shift_zeros)
+        self.table_proportions = self.table / self.table.sum()
+        row_levels, column_levels = self._category_levels()
+        (
+            row_sample_proportions,
+            column_sample_proportions,
+        ) = self.sample_marginal_proportions()
+        row_totals, column_totals = self.sample_marginal_totals()
+        self.rows = Dimension("rows", row_levels, row_totals, row_sample_proportions)
+        self.columns = Dimension(
+            "columns", column_levels, column_totals, column_sample_proportions
+        )
 
     def _category_levels(self):
         """
@@ -34,3 +56,12 @@ class ContingencyTable(sm.stats.Table):
                 np.char.add("C", np.arange(1, ncols + 1).astype(str)),
             )
         return row, column
+
+    def sample_marginal_totals(self):
+        """Sample totals of rows and columns of the table."""
+        return self.table.sum(1), self.table.sum(0)
+
+    def sample_marginal_proportions(self):
+        """Sample proportions of rows and columns of the table."""
+        proportions = self.table / self.table.sum()
+        return proportions.sum(1), proportions.sum(0)
