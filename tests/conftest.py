@@ -34,15 +34,10 @@ def dataframe() -> DatasetFixture:
 def array() -> DatasetFixture:
     """Fixture for contingency tables as numpy.ndarray object."""
     table = np.array(
-        [
-            [4, 4, 25, 18, 10],
-            [2, 3, 10, 24, 6],
-            [3, 7, 12, 33, 7],
-            [2, 4, 4, 13, 2],
-        ]
+        [[4, 2, 3, 2], [4, 3, 7, 4], [25, 10, 12, 4], [18, 24, 33, 13], [10, 6, 7, 2]]
     )
-    row_idx = np.array(["R1", "R2", "R3", "R4"])
-    column_idx = np.array(["C1", "C2", "C3", "C4", "C5"])
+    row_idx = np.array(["R1", "R2", "R3", "R4", "R5"])
+    column_idx = np.array(["C1", "C2", "C3", "C4"])
     return DatasetFixture(row_idx, column_idx, table)
 
 
@@ -50,7 +45,17 @@ def array() -> DatasetFixture:
 def weights():
     """Correspondence analysis weights fixture."""
     row, column = (
-        np.diag(np.array([1.77874518, 2.07096328, 1.76434215, 2.7784888])),
         np.diag(np.array([4.18872947, 3.27448045, 1.94533126, 1.48093951, 2.7784888])),
+        np.diag(np.array([1.77874518, 2.07096328, 1.76434215, 2.7784888])),
+    )
+    return row, column
+
+
+@pytest.fixture(scope="session")
+def distances():
+    """Correspondence analysis distances fixture."""
+    row, column = (
+        np.array([0.04689781, 0.12739262, 0.14499268, 0.05761188, 0.04672912]),
+        np.array([0.1556221, 0.03027453, 0.03925446, 0.12610259]),
     )
     return row, column
