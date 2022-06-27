@@ -52,10 +52,32 @@ def weights():
 
 
 @pytest.fixture(scope="session")
+def mass():
+    """Correspondence analysis mass fixture."""
+    row, column = (
+        np.array([[0.05699482], [0.09326425], [0.2642487], [0.45595855], [0.12953368]]),
+        np.array([[0.31606218], [0.23316062], [0.32124352], [0.12953368]]),
+    )
+    return row, column
+
+
+@pytest.fixture(scope="session")
 def distances():
     """Correspondence analysis distances fixture."""
     row, column = (
-        np.array([0.04689781, 0.12739262, 0.14499268, 0.05761188, 0.04672912]),
-        np.array([0.1556221, 0.03027453, 0.03925446, 0.12610259]),
+        np.array(
+            [[0.04689781], [0.12739262], [0.14499268], [0.05761188], [0.04672912]]
+        ),
+        np.array([[0.1556221], [0.03027453], [0.03925446], [0.12610259]]),
+    )
+    return row, column
+
+
+@pytest.fixture(scope="session")
+def inertia():
+    """Correspondence analysis distances fixture."""
+    row, column = (
+        np.array([[0.03137618], [0.13946703], [0.44974987], [0.30835392], [0.071053]]),
+        np.array([[0.57737221], [0.08285995], [0.14802515], [0.19174269]]),
     )
     return row, column
