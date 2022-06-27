@@ -56,19 +56,22 @@ class ContingencyTable(sm.stats.Table):
         """
         nrows, ncols = self.table.shape
         if isinstance(self.table_orig, pd.DataFrame):
-            row, column = self.table_orig.index.values, self.table_orig.columns.values
+            row, column = (
+                self.table_orig.index.values.reshape(-1, 1),
+                self.table_orig.columns.values.reshape(-1, 1),
+            )
         else:
             row, column = (
-                np.char.add("R", np.arange(1, nrows + 1).astype(str)),
-                np.char.add("C", np.arange(1, ncols + 1).astype(str)),
+                np.char.add("R", np.arange(1, nrows + 1).astype(str)).reshape(-1, 1),
+                np.char.add("C", np.arange(1, ncols + 1).astype(str)).reshape(-1, 1),
             )
         return row, column
 
     def sample_marginal_totals(self):
         """Sample totals of rows and columns of the table."""
-        return self.table.sum(1), self.table.sum(0)
+        return self.table.sum(1).reshape(-1, 1), self.table.sum(0).reshape(-1, 1)
 
     def sample_marginal_proportions(self):
         """Sample proportions of rows and columns of the table."""
         proportions = self.table / self.table.sum()
-        return proportions.sum(1), proportions.sum(0)
+        return proportions.sum(1).reshape(-1, 1), proportions.sum(0).reshape(-1, 1)
