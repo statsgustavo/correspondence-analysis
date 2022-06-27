@@ -12,3 +12,6 @@ class TestCorrespondenceAnalysis:
         row, column = ca.rows.mass, ca.columns.mass
         assert np.allclose(row, expected_row)
         assert np.allclose(column, expected_column)
+
+    def test_distances(self, array, distances):
+        pass
