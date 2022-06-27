@@ -2,7 +2,7 @@ import numpy as np
 from src.correspondence_analysis import CorrespondenceAnalysis
 
 
-class TestCorrespondenceAnalysis:
+class TestBaseCorrespondenceAnalysis:
     """Tests for correspondence analysis implementation."""
 
     def test_weights_matrix(self, array, weights):
