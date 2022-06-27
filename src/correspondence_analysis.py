@@ -14,8 +14,8 @@ class OneDimensionResults:
     of a contingency table for correspondence analysis.
 
     :param mass:
-    :param inertia:
     :param distance:
+    :param inertia:
     :param factor_scores:
     :param cor:
     :param ctr:
@@ -23,8 +23,8 @@ class OneDimensionResults:
     """
 
     mass: np.ndarray
-    inertia: np.ndarray
     distance: np.ndarray
+    inertia: np.ndarray
     factor_scores: np.ndarray
     cor: np.ndarray
     ctr: np.ndarray
@@ -47,14 +47,19 @@ class CorrespondenceAnalysis(ContingencyTable):
     def _fit(self):
         row_weights, column_weights = self._weights()
         row_distances, column_distances = self._distance()
+        row_inertia, column_inertia = self._inertia((row_distances, column_distances))
+
         self.rows, self.columns = (
-            OneDimensionResults(row_weights, None, row_distances, *([None] * 4)),
-            OneDimensionResults(column_weights, None, column_distances, *([None] * 4)),
+            OneDimensionResults(row_weights, row_distances, row_inertia, *([None] * 4)),
+            OneDimensionResults(
+                column_weights, column_distances, column_inertia, *([None] * 4)
+            ),
         )
 
     def _weights(self) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Proportion of the whole table in the category represented by the row/column.
+        Diagonal matrix of the inverse square roots of the row/column proportions
+        relative to the whole table.
         """
         return tuple(
             map(
@@ -63,13 +68,13 @@ class CorrespondenceAnalysis(ContingencyTable):
             )
         )
 
-    def _inertia(self):
+    def _mass(self) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Weighted average of chi-squared distance between row/column profile and their
-        average profile.
+        Proportion of the whole table in the category represented by the row/column.
         """
+        return self.rows.proportions, self.columns.proportions
 
-    def _distance(self):
+    def _distance(self) -> Tuple[np.ndarray, np.ndarray]:
         """Weighted distance from row/column profile to the average axis' profile."""
         row_squared_differences = np.square(
             (self.table_proportions / self.rows.proportions)
@@ -81,12 +86,37 @@ class CorrespondenceAnalysis(ContingencyTable):
             - self.rows.proportions
         )
 
-        row_distances, column_distances = (
-            (row_squared_differences / self.columns.proportions.T).sum(1),
-            (column_square_differences / self.rows.proportions).sum(0),
+        row_distances = (row_squared_differences / self.columns.proportions.T).sum(
+            1, keepdims=True
+        )
+        column_distances = (
+            (column_square_differences / self.rows.proportions).sum(0, keepdims=True).T
         )
 
         return row_distances, column_distances
+
+    def _inertia(self, distances: Tuple[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Weighted average of chi-squared distance between row/column profile and their
+        average profile.
+
+        :param distances: a tuple of np.ndarray containing the distances from each
+        row/column profiles to their axis' average profile.
+        """
+        row_distances, column_distances = distances
+
+        row_inertia = (
+            row_distances
+            * self.rows.proportions
+            / np.sum(row_distances * self.rows.proportions)
+        )
+
+        column_inertia = (
+            column_distances
+            * self.columns.proportions
+            / np.sum(column_distances * self.columns.proportions)
+        )
+        return row_inertia, column_inertia
 
     def _profile_correlation(self):
         """
