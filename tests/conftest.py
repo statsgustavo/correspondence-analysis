@@ -44,3 +44,21 @@ def array() -> DatasetFixture:
     row_idx = np.array(["R1", "R2", "R3", "R4"])
     column_idx = np.array(["C1", "C2", "C3", "C4", "C5"])
     return DatasetFixture(row_idx, column_idx, table)
+
+
+@pytest.fixture(scope="session")
+def weights():
+    """Correspondence analysis weights fixture."""
+    table = np.array(
+        [
+            [4, 4, 25, 18, 10],
+            [2, 3, 10, 24, 6],
+            [3, 7, 12, 33, 7],
+            [2, 4, 4, 13, 2],
+        ]
+    )
+    proportions = table / table.sum()
+    return (
+        1 / np.sqrt(proportions.sum(1)),
+        1 / np.sqrt(proportions.sum(0)),
+    )
