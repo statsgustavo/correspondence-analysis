@@ -30,13 +30,20 @@ class ContingencyTable(sm.stats.Table):
             Contingency table of frequencies.
         """
         super(ContingencyTable, self).__init__(table, shift_zeros)
+        self._parse()
+
+    def _parse(self):
+        """Parses table and computes dimension attributes."""
         self.table_proportions = self.table / self.table.sum()
         row_levels, column_levels = self._category_levels()
+
         (
             row_sample_proportions,
             column_sample_proportions,
         ) = self.sample_marginal_proportions()
+
         row_totals, column_totals = self.sample_marginal_totals()
+
         self.rows = Dimension("rows", row_levels, row_totals, row_sample_proportions)
         self.columns = Dimension(
             "columns", column_levels, column_totals, column_sample_proportions
