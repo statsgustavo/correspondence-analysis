@@ -46,9 +46,10 @@ class CorrespondenceAnalysis(ContingencyTable):
 
     def _fit(self):
         row_weights, column_weights = self._weights()
+        row_distances, column_distances = self._distance()
         self.rows, self.columns = (
-            OneDimensionResults(row_weights, *([None] * 6)),
-            OneDimensionResults(column_weights, *([None] * 6)),
+            OneDimensionResults(row_weights, None, row_distances, *([None] * 4)),
+            OneDimensionResults(column_weights, None, column_distances, *([None] * 4)),
         )
 
     def _weights(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -58,7 +59,7 @@ class CorrespondenceAnalysis(ContingencyTable):
         return tuple(
             map(
                 lambda p: np.diag(1 / np.sqrt(p)),
-                [self.rows.proportions, self.columns.proportions],
+                [self.rows.proportions.ravel(), self.columns.proportions.ravel()],
             )
         )
 
@@ -70,6 +71,22 @@ class CorrespondenceAnalysis(ContingencyTable):
 
     def _distance(self):
         """Weighted distance from row/column profile to the average axis' profile."""
+        row_squared_differences = np.square(
+            (self.table_proportions / self.rows.proportions)
+            - self.columns.proportions.T
+        )
+
+        column_square_differences = np.square(
+            (self.table_proportions / self.columns.proportions.T)
+            - self.rows.proportions
+        )
+
+        row_distances, column_distances = (
+            (row_squared_differences / self.columns.proportions.T).sum(1),
+            (column_square_differences / self.rows.proportions).sum(0),
+        )
+
+        return row_distances, column_distances
 
     def _profile_correlation(self):
         """
