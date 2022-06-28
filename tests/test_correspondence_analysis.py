@@ -43,3 +43,22 @@ class TestCorrespondenceAnalysis:
 
         assert np.allclose(row, expected_row)
         assert np.allclose(column, expected_column)
+
+    def test_standardized_residuals_matrix_shape(
+        self, array, standardized_residuals_matrix
+    ):
+        """Tests shape of standardized residuals matrix."""
+        ca = CorrespondenceAnalysis(array.data)
+        assert (
+            ca.standardized_residuals_matrix.shape
+            == standardized_residuals_matrix.shape
+        )
+
+    def test_standardized_residuals_matrix_values(
+        self, array, standardized_residuals_matrix
+    ):
+        """Tests correctness of standardized residuals matrix calculations."""
+        ca = CorrespondenceAnalysis(array.data)
+        assert np.allclose(
+            ca.standardized_residuals_matrix, standardized_residuals_matrix
+        )

@@ -63,6 +63,10 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         row_distance, column_distance = distances = self.distance()
         row_inertia, column_inertia = self.inertia(distances)
 
+        self.standardized_residuals_matrix = self._standardized_residuals_matrix(
+            weights
+        )
+
         self.profiles = CorrespondenceAnalysisResults(
             OneDimensionResults(
                 row_mass, row_weights, row_distance, row_inertia, *([None] * 4)
@@ -85,7 +89,8 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         its resulting projection matrices.
         """
         row, column = weights
-        return np.diag(row) @ (self.table - self.fittedvalues) @ np.diag(column)
+        expected_proportions = np.outer(self.rows.proportions, self.columns.proportions)
+        return row @ (self.table_proportions - expected_proportions) @ column
 
     def _factor_scores(self, weights, singular_values, singular_vectors):
         """

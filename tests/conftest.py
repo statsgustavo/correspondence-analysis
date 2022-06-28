@@ -16,15 +16,6 @@ class DatasetFixture:
 
 
 @pytest.fixture(scope="session")
-def dictionary():
-    return {
-        "fibonacci": [1, 1, 2, 3, 5, 8, 11],
-        "pi": [3, 1, 4, 1, 5, 9, 2],
-        "phi": [1, 6, 1, 8, 0, 3, 3],
-    }
-
-
-@pytest.fixture(scope="session")
 def dataframe() -> DatasetFixture:
     """Fixture for contingency tables as pandas.DataFrames object."""
     table = pd.DataFrame(
@@ -90,3 +81,16 @@ def inertia():
         np.array([[0.57737221], [0.08285995], [0.14802515], [0.19174269]]),
     )
     return row, column
+
+
+@pytest.fixture(scope="session")
+def standardized_residuals_matrix():
+    return np.array(
+        [
+            [0.02020239, -0.02538438, -0.02043562, 0.03468162],
+            [-0.05097522, -0.04205447, 0.0364484, 0.07864884],
+            [0.15922216, -0.03947701, -0.07795287, -0.07298869],
+            [-0.13394189, 0.05533047, 0.06404368, 0.03413421],
+            [0.05373569, 0.00509777, -0.02618966, -0.04953368],
+        ]
+    )
