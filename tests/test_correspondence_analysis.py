@@ -62,3 +62,17 @@ class TestCorrespondenceAnalysis:
         assert np.allclose(
             ca.standardized_residuals_matrix, standardized_residuals_matrix
         )
+
+    def test_factor_scores_shape(self, array, factor_scores):
+        """Test factor scores matrices shapes."""
+        row_expected, column_expected = factor_scores
+        ca = CorrespondenceAnalysis(array.data)
+        assert ca.profiles.row.factor_scores.shape == row_expected.shape
+        assert ca.profiles.column.factor_scores.shape == column_expected.shape
+
+    def test_factor_scores_values(self, array, factor_scores):
+        """Test correctness of factor scores matrices values."""
+        row_expected, column_expected = factor_scores
+        ca = CorrespondenceAnalysis(array.data)
+        assert np.allclose(ca.profiles.row.factor_scores, row_expected, atol=1e-7)
+        assert np.allclose(ca.profiles.column.factor_scores, column_expected, atol=1e-7)
