@@ -1,28 +1,36 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from tkinter import ON
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 
-from src.base import BaseCorrespondenceAnalysis, OneDimensionResults
+from src.base import BaseCorrespondenceAnalysis
 
 
-def destructure_dictionary(dictionary: Dict[Any, Any], keys: List[str] = None):
+@dataclass
+class OneDimensionResults:
     """
-    Given a dictionaty object it returns a list of dictionary values in the
-    order of `keys`. If `keys` is None then dictionary values are returned according to
-    tha alphabetical order of its keys.
+    Container class for storing correspondence analysis statistics of one dimension
+    of a contingency table for correspondence analysis.
 
-    :param dictionary: dictionary to be destructured
-    :param keys: list of key values in `dictionary` to define the order in which values
-    in `dictionary` to be returned.
-
-    :return values: List of values in `dictionary` ordered as `keys`.
+    :param weights:
+    :param mass:
+    :param distance:
+    :param inertia:
+    :param factor_scores:
+    :param cor:
+    :param ctr:
+    :param angle:
     """
-    if keys is None:
-        keys = sorted(list(dictionary.keys()))
 
-    values = list(map(lambda k: dictionary[k], keys))
-    return values
+    weights: np.ndarray
+    mass: np.ndarray
+    distance: np.ndarray
+    inertia: np.ndarray
+    factor_scores: np.ndarray
+    cor: np.ndarray
+    ctr: np.ndarray
+    angle: np.ndarray
 
 
 @dataclass
@@ -44,40 +52,53 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             Contingency table for which correspondence analysis will be performed.
         """
         super(CorrespondenceAnalysis, self).__init__(table)
+        self._fit()
 
     def _fit(self):
         """
         Runs correspondence analysis for the inputed contingency table.
         """
-        key_order = ["weights", "mass", "distance", "inertia"]
+        row_mass, column_mass = self.mass()
+        row_weights, column_weights = weights = self.weights()
+        row_distance, column_distance = distances = self.distance()
+        row_inertia, column_inertia = self.inertia(distances)
+
         self.profiles = CorrespondenceAnalysisResults(
             OneDimensionResults(
-                *destructure_dictionary(self.row_profiles.__dict__, key_order),
-                None,
-                None,
-                None,
-                None
+                row_mass, row_weights, row_distance, row_inertia, *([None] * 4)
             ),
             OneDimensionResults(
-                *destructure_dictionary(self.column_profiles.__dict__, key_order),
-                None,
-                None,
-                None,
-                None
+                column_mass,
+                column_weights,
+                column_distance,
+                column_inertia,
+                *([None] * 4)
             ),
         )
 
-    def _standardized_residuals_matrix(self):
+    def _standardized_residuals_matrix(
+        self, weights: Tuple[np.ndarray, np.ndarray]
+    ) -> np.ndarray:
         """
         Computes the matrix to be decomposed using singular value decomposition
         such that the factor scores for row/column profiles can be obtained with
         its resulting projection matrices.
         """
-        return (
-            np.diag(self.row_profiles.weights)
-            @ (self.table - self.fittedvalues)
-            @ np.diag(self.column_profiles.weights)
-        )
+        row, column = weights
+        return np.diag(row) @ (self.table - self.fittedvalues) @ np.diag(column)
+
+    def _factor_scores(self, weights, singular_values, singular_vectors):
+        """
+        Computes the row/column factos scores (aka principal coodinates).
+
+        :param weights: diagonal matrix of row/colulmn profile weights.
+        :param singular_values: vector of singular values obtained from svd
+        decomposition.
+        :param singular_vectors: matrix of singular vectors (either left or right) from
+        svd decomposition.
+
+        :return factor_scores: matrix of row/column factor scores.
+        """
 
     def _profile_correlation(self):
         """

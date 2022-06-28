@@ -1,28 +1,5 @@
 import numpy as np
-from src.correspondence_analysis import CorrespondenceAnalysis, destructure_dictionary
-
-
-def test_destructure_dictionary(dictionary):
-    seq1 = destructure_dictionary(dictionary, ["pi", "phi", "fibonacci"])
-    assert seq1 == [
-        [3, 1, 4, 1, 5, 9, 2],
-        [1, 6, 1, 8, 0, 3, 3],
-        [1, 1, 2, 3, 5, 8, 11],
-    ]
-
-    seq2 = destructure_dictionary(dictionary, ["phi", "pi", "fibonacci"])
-    assert seq2 == [
-        [1, 6, 1, 8, 0, 3, 3],
-        [3, 1, 4, 1, 5, 9, 2],
-        [1, 1, 2, 3, 5, 8, 11],
-    ]
-
-    seq3 = destructure_dictionary(dictionary)
-    assert seq3 == [
-        [1, 1, 2, 3, 5, 8, 11],
-        [1, 6, 1, 8, 0, 3, 3],
-        [3, 1, 4, 1, 5, 9, 2],
-    ]
+from src.correspondence_analysis import CorrespondenceAnalysis
 
 
 class TestCorrespondenceAnalysis:
