@@ -16,6 +16,15 @@ class DatasetFixture:
 
 
 @pytest.fixture(scope="session")
+def dictionary():
+    return {
+        "fibonacci": [1, 1, 2, 3, 5, 8, 11],
+        "pi": [3, 1, 4, 1, 5, 9, 2],
+        "phi": [1, 6, 1, 8, 0, 3, 3],
+    }
+
+
+@pytest.fixture(scope="session")
 def dataframe() -> DatasetFixture:
     """Fixture for contingency tables as pandas.DataFrames object."""
     table = pd.DataFrame(

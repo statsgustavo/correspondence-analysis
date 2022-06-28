@@ -1,122 +1,83 @@
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Any, Dict, List
 
 import numpy as np
 
-from src.contingency_table import ContingencyTable
-from src.types import TableType
+from src.base import BaseCorrespondenceAnalysis, OneDimensionResults
+
+
+def destructure_dictionary(dictionary: Dict[Any, Any], keys: List[str] = None):
+    """
+    Given a dictionaty object it returns a list of dictionary values in the
+    order of `keys`. If `keys` is None then dictionary values are returned according to
+    tha alphabetical order of its keys.
+
+    :param dictionary: dictionary to be destructured
+    :param keys: list of key values in `dictionary` to define the order in which values
+    in `dictionary` to be returned.
+
+    :return values: List of values in `dictionary` ordered as `keys`.
+    """
+    if keys is None:
+        keys = sorted(list(dictionary.keys()))
+
+    values = list(map(lambda k: dictionary[k], keys))
+    return values
 
 
 @dataclass
-class OneDimensionResults:
-    """
-    Container class for storing correspondence analysis statistics of one dimension
-    of a contingency table for correspondence analysis.
+class CorrespondenceAnalysisResults:
+    """Container class for correspondence analysis results."""
 
-    :param mass:
-    :param distance:
-    :param inertia:
-    :param factor_scores:
-    :param cor:
-    :param ctr:
-    :param angle:
-    """
-
-    mass: np.ndarray
-    distance: np.ndarray
-    inertia: np.ndarray
-    factor_scores: np.ndarray
-    cor: np.ndarray
-    ctr: np.ndarray
-    angle: np.ndarray
+    row: OneDimensionResults
+    column: OneDimensionResults
 
 
-class CorrespondenceAnalysis(ContingencyTable):
-    """Correspondence analisys class."""
+class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
+    """Correspondence analysis class."""
 
-    def __init__(self, table: TableType):
+    def __init__(self, table):
         """
-        Loads contingency table and runs corresponce analysis on it.
+        Loads contingency table and computes correspondence analysis.
 
         :param table:
             Contingency table for which correspondence analysis will be performed.
         """
         super(CorrespondenceAnalysis, self).__init__(table)
-        self._fit()
 
     def _fit(self):
-        row_weights, column_weights = self._weights()
-        row_distances, column_distances = self._distance()
-        row_inertia, column_inertia = self._inertia((row_distances, column_distances))
-
-        self.rows, self.columns = (
-            OneDimensionResults(row_weights, row_distances, row_inertia, *([None] * 4)),
+        """
+        Runs correspondence analysis for the inputed contingency table.
+        """
+        key_order = ["weights", "mass", "distance", "inertia"]
+        self.profiles = CorrespondenceAnalysisResults(
             OneDimensionResults(
-                column_weights, column_distances, column_inertia, *([None] * 4)
+                *destructure_dictionary(self.row_profiles.__dict__, key_order),
+                None,
+                None,
+                None,
+                None
+            ),
+            OneDimensionResults(
+                *destructure_dictionary(self.column_profiles.__dict__, key_order),
+                None,
+                None,
+                None,
+                None
             ),
         )
 
-    def _weights(self) -> Tuple[np.ndarray, np.ndarray]:
+    def _standardized_residuals_matrix(self):
         """
-        Diagonal matrix of the inverse square roots of the row/column proportions
-        relative to the whole table.
+        Computes the matrix to be decomposed using singular value decomposition
+        such that the factor scores for row/column profiles can be obtained with
+        its resulting projection matrices.
         """
-        return tuple(
-            map(
-                lambda p: np.diag(1 / np.sqrt(p)),
-                [self.rows.proportions.ravel(), self.columns.proportions.ravel()],
-            )
+        return (
+            np.diag(self.row_profiles.weights)
+            @ (self.table - self.fittedvalues)
+            @ np.diag(self.column_profiles.weights)
         )
-
-    def _mass(self) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Proportion of the whole table in the category represented by the row/column.
-        """
-        return self.rows.proportions, self.columns.proportions
-
-    def _distance(self) -> Tuple[np.ndarray, np.ndarray]:
-        """Weighted distance from row/column profile to the average axis' profile."""
-        row_squared_differences = np.square(
-            (self.table_proportions / self.rows.proportions)
-            - self.columns.proportions.T
-        )
-
-        column_square_differences = np.square(
-            (self.table_proportions / self.columns.proportions.T)
-            - self.rows.proportions
-        )
-
-        row_distances = (row_squared_differences / self.columns.proportions.T).sum(
-            1, keepdims=True
-        )
-        column_distances = (
-            (column_square_differences / self.rows.proportions).sum(0, keepdims=True).T
-        )
-
-        return row_distances, column_distances
-
-    def _inertia(self, distances: Tuple[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Weighted average of chi-squared distance between row/column profile and their
-        average profile.
-
-        :param distances: a tuple of np.ndarray containing the distances from each
-        row/column profiles to their axis' average profile.
-        """
-        row_distances, column_distances = distances
-
-        row_inertia = (
-            row_distances
-            * self.rows.proportions
-            / np.sum(row_distances * self.rows.proportions)
-        )
-
-        column_inertia = (
-            column_distances
-            * self.columns.proportions
-            / np.sum(column_distances * self.columns.proportions)
-        )
-        return row_inertia, column_inertia
 
     def _profile_correlation(self):
         """
