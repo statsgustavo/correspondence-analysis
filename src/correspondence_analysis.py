@@ -70,7 +70,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             left_singular_vectors,
             singular_values,
             right_singular_vectors,
-        ) = np.linalg.svd(self.standardized_residuals_matrix)
+        ) = np.linalg.svd(self.standardized_residuals_matrix, full_matrices=False)
 
         row_scores, column_scores = (
             self._factor_scores(row_weights, singular_values, left_singular_vectors),
@@ -129,12 +129,6 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
 
         :return factor_scores: matrix of row/column factor scores.
         """
-        _, ncols = singular_vectors.shape
-
-        if ncols != singular_values.size:
-            padding = ncols - singular_values.size
-            singular_values = np.pad(singular_values, ((0, padding)))
-
         factor_scores = weights @ singular_vectors @ np.diag(singular_values)
 
         return factor_scores
