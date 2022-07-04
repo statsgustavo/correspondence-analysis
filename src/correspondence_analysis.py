@@ -79,6 +79,11 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             ),
         )
 
+        row_cor, column_cor = (
+            self._profile_correlation(row_scores, row_distance),
+            self._profile_correlation(column_scores, column_distance),
+        )
+
         self.profiles = CorrespondenceAnalysisResults(
             OneDimensionResults(
                 row_mass,
@@ -86,7 +91,8 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 row_distance,
                 row_inertia,
                 row_scores,
-                *([None] * 3)
+                row_cor,
+                *([None] * 2)
             ),
             OneDimensionResults(
                 column_mass,
@@ -94,7 +100,8 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 column_distance,
                 column_inertia,
                 column_scores,
-                *([None] * 3)
+                column_cor,
+                *([None] * 2)
             ),
         )
 
@@ -132,11 +139,12 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
 
         return factor_scores
 
-    def _profile_correlation(self):
+    def _profile_correlation(self, factors, distances):
         """
         Correlation between row/column profile and their axis. Morover it is the
         proportion of variance in a profile explained by the axis.
         """
+        return np.square(factors) / distances
 
     def _profile_contribution(self):
         """

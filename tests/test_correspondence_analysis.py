@@ -76,3 +76,17 @@ class TestCorrespondenceAnalysis:
         ca = CorrespondenceAnalysis(array.data)
         assert np.allclose(ca.profiles.row.factor_scores, row_expected, atol=1e-7)
         assert np.allclose(ca.profiles.column.factor_scores, column_expected, atol=1e-7)
+
+    def test_profile_correlation_shape(self, array, profile_correlation):
+        """Test profile correlation matrices shapes."""
+        row_expected, column_expected = profile_correlation
+        ca = CorrespondenceAnalysis(array.data)
+        assert ca.profiles.row.cor.shape == row_expected.shape
+        assert ca.profiles.column.cor.shape == column_expected.shape
+
+    def test_profile_correlation_values(self, array, profile_correlation):
+        """Test correctness of profile correlation values."""
+        row_expected, column_expected = profile_correlation
+        ca = CorrespondenceAnalysis(array.data)
+        assert np.allclose(ca.profiles.row.cor, row_expected, atol=1e-7)
+        assert np.allclose(ca.profiles.column.cor, column_expected, atol=1e-7)
