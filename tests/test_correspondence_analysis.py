@@ -9,7 +9,7 @@ class TestCorrespondenceAnalysis:
         """Tests calculation of diagonal weights matrix."""
         expected_row, expected_column = weights
         ca = CorrespondenceAnalysis(array.data)
-        row, column = ca.profiles.row.mass, ca.profiles.column.mass
+        row, column = ca.profiles.row.weights, ca.profiles.column.weights
 
         assert row.shape == expected_row.shape
         assert column.shape == expected_column.shape
@@ -90,3 +90,17 @@ class TestCorrespondenceAnalysis:
         ca = CorrespondenceAnalysis(array.data)
         assert np.allclose(ca.profiles.row.cor, row_expected, atol=1e-7)
         assert np.allclose(ca.profiles.column.cor, column_expected, atol=1e-7)
+
+    def test_profile_contribution_shape(self, array, profile_contribution):
+        """Test profile contribution matrices shapes."""
+        row_expected, column_expected = profile_contribution
+        ca = CorrespondenceAnalysis(array.data)
+        assert ca.profiles.row.ctr.shape == row_expected.shape
+        assert ca.profiles.column.ctr.shape == column_expected.shape
+
+    def test_profile_contribution_values(self, array, profile_contribution):
+        """Test correctness of profile contribution values."""
+        row_expected, column_expected = profile_contribution
+        ca = CorrespondenceAnalysis(array.data)
+        assert np.allclose(ca.profiles.row.ctr, row_expected, atol=1e-7)
+        assert np.allclose(ca.profiles.column.ctr, column_expected, atol=1e-7)

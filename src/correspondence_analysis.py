@@ -22,8 +22,8 @@ class OneDimensionResults:
     :param angle:
     """
 
-    weights: np.ndarray
     mass: np.ndarray
+    weights: np.ndarray
     distance: np.ndarray
     inertia: np.ndarray
     factor_scores: np.ndarray
@@ -84,6 +84,11 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             self._profile_correlation(column_scores, column_distance),
         )
 
+        row_ctr, column_ctr = (
+            self._profile_contribution(row_mass, row_scores, singular_values),
+            self._profile_contribution(column_mass, column_scores, singular_values),
+        )
+
         self.profiles = CorrespondenceAnalysisResults(
             OneDimensionResults(
                 row_mass,
@@ -92,7 +97,8 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 row_inertia,
                 row_scores,
                 row_cor,
-                *([None] * 2)
+                row_ctr,
+                *([None] * 1)
             ),
             OneDimensionResults(
                 column_mass,
@@ -101,7 +107,8 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 column_inertia,
                 column_scores,
                 column_cor,
-                *([None] * 2)
+                column_ctr,
+                *([None] * 1)
             ),
         )
 
@@ -140,10 +147,12 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         """
         return np.square(factors) / distances
 
-    def _profile_contribution(self):
+    def _profile_contribution(self, mass, factors, singular_values):
         """
         The contribution of the row/column profile to the inertia of its axis.
         """
+        eigenvalues = np.square(singular_values).reshape(-1, 1)
+        return mass * np.square(factors) / eigenvalues.T
 
     def _angle(self):
         """Angle between the axis and the profile."""
