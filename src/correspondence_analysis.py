@@ -75,7 +75,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         row_scores, column_scores = (
             self._factor_scores(row_weights, singular_values, left_singular_vectors),
             self._factor_scores(
-                column_weights, singular_values, right_singular_vectors
+                column_weights, singular_values, right_singular_vectors.T
             ),
         )
 
