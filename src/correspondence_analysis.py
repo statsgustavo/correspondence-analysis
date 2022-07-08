@@ -186,11 +186,12 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         """Shows summary tables of the correspondence analysis."""
         eigenvalues_summary = pd.DataFrame(
             {
-                "Eigenvalues": self.eigenvalues,
-                "% Variance": self.eigenvalues / self.total_inertia,
-                "% Cummulative": self.eigenvalues.cumsum() / self.total_inertia,
-            }
-        )
+                "Eigenvalues": self.eigenvalues.ravel(),
+                "% Variance": self.eigenvalues.ravel() / self.total_inertia,
+                "% Cummulative": self.eigenvalues.cumsum().ravel() / self.total_inertia,
+            },
+            index=[f"Profile {i + 1}" for i in range(self.eigenvalues.shape[0])],
+        ).round(precision)
 
         rows_summary = pd.DataFrame(
             np.column_stack(
