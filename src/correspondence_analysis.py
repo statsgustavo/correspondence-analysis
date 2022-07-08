@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
+import pandas as pd
+from IPython.display import display
 from matplotlib import pyplot as plt
 
 from src.base import BaseCorrespondenceAnalysis
@@ -81,6 +83,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         )
 
         self.eigenvalues = self._eigenvalues(singular_values)
+        self.total_inertia = self.eigenvalues.sum()
 
         row_scores, column_scores = (
             self._factor_scores(row_weights, singular_values, left_singular_vectors),
@@ -178,6 +181,48 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
 
     def _angle(self):
         """Angle between the axis and the profile."""
+
+    def summary(self, precision=3):
+        """Shows summary tables of the correspondence analysis."""
+        eigenvalues_summary = pd.DataFrame(
+            {
+                "Eigenvalues": self.eigenvalues,
+                "% Variance": self.eigenvalues / self.total_inertia,
+                "% Cummulative": self.eigenvalues.cumsum() / self.total_inertia,
+            }
+        )
+
+        rows_summary = pd.DataFrame(
+            np.column_stack(
+                [
+                    self.profiles.row.mass,
+                    self.profiles.row.inertia,
+                    self.profiles.row.factor_scores[:, :2],
+                    self.profiles.row.ctr[:, :2],
+                    self.profiles.row.cor[:, :2],
+                ]
+            ),
+            index=self.rows.levels,
+            columns=["Mass", "Inertia", "F1", "F2", "CTR1", "CTR2", "COR1", "COR2"],
+        ).round(precision)
+
+        columns_summary = pd.DataFrame(
+            np.column_stack(
+                [
+                    self.profiles.column.mass,
+                    self.profiles.column.inertia,
+                    self.profiles.column.factor_scores[:, :2],
+                    self.profiles.column.ctr[:, :2],
+                    self.profiles.column.cor[:, :2],
+                ]
+            ),
+            index=self.columns.levels,
+            columns=["Mass", "Inertia", "G1", "G2", "CTR1", "CTR2", "COR1", "COR2"],
+        ).round(precision)
+
+        display(eigenvalues_summary)
+        display(rows_summary)
+        display(columns_summary)
 
     def plot_factors(self):
         """
