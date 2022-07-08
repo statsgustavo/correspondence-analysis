@@ -203,7 +203,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                     self.profiles.row.cor[:, :2],
                 ]
             ),
-            index=self.rows.levels,
+            index=self.rows.levels.ravel(),
             columns=["Mass", "Inertia", "F1", "F2", "CTR1", "CTR2", "COR1", "COR2"],
         ).round(precision)
 
@@ -217,7 +217,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                     self.profiles.column.cor[:, :2],
                 ]
             ),
-            index=self.columns.levels,
+            index=self.columns.levels.ravel(),
             columns=["Mass", "Inertia", "G1", "G2", "CTR1", "CTR2", "COR1", "COR2"],
         ).round(precision)
 
