@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
+from matplotlib import pyplot as plt
 
 from src.base import BaseCorrespondenceAnalysis
 
@@ -12,8 +13,8 @@ class OneDimensionResults:
     Container class for storing correspondence analysis statistics of one dimension
     of a contingency table for correspondence analysis.
 
-    :param weights:
     :param mass:
+    :param weights:
     :param distance:
     :param inertia:
     :param factor_scores:
@@ -98,24 +99,25 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             self._profile_contribution(column_mass, column_scores, self.eigenvalues),
         )
 
-        self.rows = self._set_profile(
-            row_mass,
-            row_weights,
-            row_distance,
-            row_inertia,
-            row_scores,
-            row_cor,
-            row_ctr,
-        )
-
-        self.columns = self._set_profile(
-            column_mass,
-            column_weights,
-            column_distance,
-            column_inertia,
-            column_scores,
-            column_cor,
-            column_ctr,
+        self.profiles = CorrespondenceAnalysisResults(
+            self._set_profile(
+                row_mass,
+                row_weights,
+                row_distance,
+                row_inertia,
+                row_scores,
+                row_cor,
+                row_ctr,
+            ),
+            self._set_profile(
+                column_mass,
+                column_weights,
+                column_distance,
+                column_inertia,
+                column_scores,
+                column_cor,
+                column_ctr,
+            ),
         )
 
     def _set_profile(
@@ -176,3 +178,55 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
 
     def _angle(self):
         """Angle between the axis and the profile."""
+
+    def plot_factors(self):
+        """
+        Plots the first two coordinates for rows and colum profiles. Row and column
+        coordinates are superimposed.
+        """
+        _ = plt.figure(figsize=(10, 10))
+        splot = plt.subplot(111)
+
+        splot.scatter(
+            self.profiles.row.factor_scores[:0],
+            self.profiles.row.factor_scores[:1],
+            s=1000 * self.profiles.row.inertia,
+            label="Row profiles",
+            color="C0",
+        )
+        for i, profile_name in enumerate(self.rows.levels):
+            f1, f2 = self.profiles.row.factor_scores[i, :2]
+            splot.annotate(
+                profile_name(f1, f2),
+                (f1 + 0.01, f2 + 0.01),
+                xycoords="data",
+                textcoords="offset points",
+                verticalalignment="bottom",
+            )
+
+        splot.scatter(
+            self.profiles.column.factor_scores[:0],
+            self.profiles.column.factor_scores[:1],
+            s=1000 * self.profiles.column.inertia,
+            label="Column profiles",
+            color="C1",
+        )
+
+        for i, profile_name in enumerate(self.columns.levels):
+            g1, g2 = self.profiles.column.factor_scores[i, :2]
+            splot.annotate(
+                profile_name,
+                (g1, g2),
+                xycoords="data",
+                textcoords="offset points",
+                verticalalignment="bottom",
+            )
+
+        splot.spines["left"].set_position("center")
+        splot.spines["bottom"].set_position("center")
+        splot.spines["right"].set_visible(False)
+        splot.spines["top"].set_visible(False)
+        splot.get_xaxis().set_ticks([])
+        splot.get_yaxis().set_ticks([])
+
+        return splot
