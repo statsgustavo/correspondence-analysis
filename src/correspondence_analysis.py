@@ -234,9 +234,9 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         splot = plt.subplot(111)
 
         splot.scatter(
-            self.profiles.row.factor_scores[:0],
-            self.profiles.row.factor_scores[:1],
-            s=1000 * self.profiles.row.inertia,
+            self.profiles.row.factor_scores[:, :0],
+            self.profiles.row.factor_scores[:, :1],
+            s=1000 * self.profiles.row.inertia.ravel(),
             label="Row profiles",
             color="C0",
         )
@@ -251,9 +251,9 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             )
 
         splot.scatter(
-            self.profiles.column.factor_scores[:0],
-            self.profiles.column.factor_scores[:1],
-            s=1000 * self.profiles.column.inertia,
+            self.profiles.column.factor_scores[:, :0],
+            self.profiles.column.factor_scores[:, :1],
+            s=1000 * self.profiles.column.inertia.ravel(),
             label="Column profiles",
             color="C1",
         )
