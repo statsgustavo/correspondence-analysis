@@ -245,9 +245,10 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             splot.annotate(
                 profile_name,
                 (f1, f2),
-                xytext=(f1 + 0.01, f2 + 0.01),
+                xytext=(f1, f2 * 0.99),
                 xycoords="data",
                 textcoords="offset points",
+                horizontalalingment="center",
                 verticalalignment="bottom",
             )
 
@@ -264,9 +265,10 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             splot.annotate(
                 profile_name,
                 (g1, g2),
-                xytext=(g1 + 0.01, g2 + 0.01),
+                xytext=(g1, g2 * 0.99),
                 xycoords="data",
                 textcoords="offset points",
+                horizontalalingment="center",
                 verticalalignment="bottom",
             )
 
