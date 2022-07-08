@@ -19,7 +19,6 @@ class OneDimensionResults:
     :param factor_scores:
     :param cor:
     :param ctr:
-    :param angle:
     """
 
     mass: np.ndarray
@@ -29,7 +28,6 @@ class OneDimensionResults:
     factor_scores: np.ndarray
     cor: np.ndarray
     ctr: np.ndarray
-    angle: np.ndarray
 
 
 @dataclass
@@ -53,6 +51,13 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         super(CorrespondenceAnalysis, self).__init__(table)
         self._fit()
 
+    def _generalized_singular_value_decomposition(
+        self, standardized_residuals_matrix: np.array
+    ) -> Tuple[np.array, np.array, np.array]:
+        """Computes standardized residuals matrix SVD decomposition."""
+        U, S, Vt = np.linalg.svd(standardized_residuals_matrix, full_matrices=False)
+        return U, S, Vt
+
     def _fit(self):
         """
         Runs correspondence analysis for the inputed contingency table.
@@ -70,7 +75,11 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             left_singular_vectors,
             singular_values,
             right_singular_vectors,
-        ) = np.linalg.svd(self.standardized_residuals_matrix, full_matrices=False)
+        ) = self._generalized_singular_value_decomposition(
+            self.standardized_residuals_matrix
+        )
+
+        self.eigenvalues = self._eigenvalues(singular_values)
 
         row_scores, column_scores = (
             self._factor_scores(row_weights, singular_values, left_singular_vectors),
@@ -85,31 +94,39 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         )
 
         row_ctr, column_ctr = (
-            self._profile_contribution(row_mass, row_scores, singular_values),
-            self._profile_contribution(column_mass, column_scores, singular_values),
+            self._profile_contribution(row_mass, row_scores, self.eigenvalues),
+            self._profile_contribution(column_mass, column_scores, self.eigenvalues),
         )
 
-        self.profiles = CorrespondenceAnalysisResults(
-            OneDimensionResults(
-                row_mass,
-                row_weights,
-                row_distance,
-                row_inertia,
-                row_scores,
-                row_cor,
-                row_ctr,
-                *([None] * 1)
-            ),
-            OneDimensionResults(
-                column_mass,
-                column_weights,
-                column_distance,
-                column_inertia,
-                column_scores,
-                column_cor,
-                column_ctr,
-                *([None] * 1)
-            ),
+        self.rows = self._set_profile(
+            row_mass,
+            row_weights,
+            row_distance,
+            row_inertia,
+            row_scores,
+            row_cor,
+            row_ctr,
+        )
+
+        self.columns = self._set_profile(
+            column_mass,
+            column_weights,
+            column_distance,
+            column_inertia,
+            column_scores,
+            column_cor,
+            column_ctr,
+        )
+
+    def _set_profile(
+        self, mass, weights, distances, inertia, scores, correlation, contribution
+    ):
+        """
+        Creates instance of OneDimentionResults object with the corresponding row/column
+        profiles statistics.
+        """
+        return OneDimensionResults(
+            mass, weights, distances, inertia, scores, correlation, contribution
         )
 
     def _standardized_residuals_matrix(
@@ -123,6 +140,10 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         row, column = weights
         expected_proportions = np.outer(self.rows.proportions, self.columns.proportions)
         return row @ (self.table_proportions - expected_proportions) @ column
+
+    def _eigenvalues(self, singular_values):
+        """Computes factors eigenvalues."""
+        return np.square(singular_values).reshape(-1, 1)
 
     def _factor_scores(self, weights, singular_values, singular_vectors):
         """
@@ -147,11 +168,10 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         """
         return np.square(factors) / distances
 
-    def _profile_contribution(self, mass, factors, singular_values):
+    def _profile_contribution(self, mass, factors, eigenvalues):
         """
         The contribution of the row/column profile to the inertia of its axis.
         """
-        eigenvalues = np.square(singular_values).reshape(-1, 1)
         return mass * np.square(factors) / eigenvalues.T
 
     def _angle(self):

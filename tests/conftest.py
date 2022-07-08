@@ -380,3 +380,20 @@ def profile_contribution():
     )
 
     return row, column
+
+
+@pytest.fixture(scope="session")
+def eigenvalues():
+    return np.array(
+        [
+            [0.2880168],
+            [0.1932599],
+            [0.1382847],
+            [0.0721578],
+            [0.0339265],
+            [0.0172454],
+            [0.0030265],
+            [0.0001659],
+            [0.0],
+        ]
+    )
