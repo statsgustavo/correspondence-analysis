@@ -120,3 +120,7 @@ class TestCorrespondenceAnalysis:
         """Test correctness of eigenvalues."""
         ca = CorrespondenceAnalysis(array.data)
         np.allclose(ca.eigenvalues, eigenvalues, atol=1e-6)
+
+    def test_plot_creation(self, array):
+        ca = CorrespondenceAnalysis(array.data)
+        ca.plot_factors()

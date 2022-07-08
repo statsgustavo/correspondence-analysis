@@ -234,35 +234,37 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         splot = plt.subplot(111)
 
         splot.scatter(
-            self.profiles.row.factor_scores[:, :0].ravel(),
-            self.profiles.row.factor_scores[:, :1].ravel(),
+            self.profiles.row.factor_scores[:, 0].ravel(),
+            self.profiles.row.factor_scores[:, 1].ravel(),
             s=1000 * self.profiles.row.inertia.ravel(),
             label="Row profiles",
             color="C0",
         )
-        for i, profile_name in enumerate(self.rows.levels):
+        for i, profile_name in enumerate(self.rows.levels.ravel()):
             f1, f2 = self.profiles.row.factor_scores[i, :2]
             splot.annotate(
-                profile_name(f1, f2),
-                (f1 + 0.01, f2 + 0.01),
+                profile_name,
+                (f1, f2),
+                xytext=(f1 + 0.01, f2 + 0.01),
                 xycoords="data",
                 textcoords="offset points",
                 verticalalignment="bottom",
             )
 
         splot.scatter(
-            self.profiles.column.factor_scores[:, :0].ravel(),
-            self.profiles.column.factor_scores[:, :1].ravel(),
+            self.profiles.column.factor_scores[:, 0].ravel(),
+            self.profiles.column.factor_scores[:, 1].ravel(),
             s=1000 * self.profiles.column.inertia.ravel(),
             label="Column profiles",
             color="C1",
         )
 
-        for i, profile_name in enumerate(self.columns.levels):
+        for i, profile_name in enumerate(self.columns.levels.ravel()):
             g1, g2 = self.profiles.column.factor_scores[i, :2]
             splot.annotate(
                 profile_name,
                 (g1, g2),
+                xytext=(g1 + 0.01, g2 + 0.01),
                 xycoords="data",
                 textcoords="offset points",
                 verticalalignment="bottom",
