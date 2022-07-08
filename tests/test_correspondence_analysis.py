@@ -9,7 +9,7 @@ class TestCorrespondenceAnalysis:
         """Tests calculation of diagonal weights matrix."""
         expected_row, expected_column = weights
         ca = CorrespondenceAnalysis(array.data)
-        row, column = ca.rows.weights, ca.columns.weights
+        row, column = ca.profiles.row.weights, ca.profiles.column.weights
 
         assert row.shape == expected_row.shape
         assert column.shape == expected_column.shape
@@ -24,7 +24,7 @@ class TestCorrespondenceAnalysis:
         """
         expected_row, expected_column = distances
         ca = CorrespondenceAnalysis(array.data)
-        row, column = ca.rows.distance, ca.columns.distance
+        row, column = ca.profiles.row.distance, ca.profiles.column.distance
 
         assert row.shape == expected_row.shape
         assert column.shape == expected_column.shape
@@ -36,7 +36,7 @@ class TestCorrespondenceAnalysis:
         """Tests calculation of row/column profiles inertia."""
         expected_row, expected_column = inertia
         ca = CorrespondenceAnalysis(array.data)
-        row, column = ca.rows.inertia, ca.columns.inertia
+        row, column = ca.profiles.row.inertia, ca.profiles.column.inertia
 
         assert row.shape == expected_row.shape
         assert column.shape == expected_column.shape
@@ -68,44 +68,48 @@ class TestCorrespondenceAnalysis:
         """Test factor scores matrices shapes."""
         row_expected, column_expected = factor_scores
         ca = CorrespondenceAnalysis(array.data)
-        assert ca.rows.factor_scores.shape[0] == row_expected.shape[0]
-        assert ca.columns.factor_scores.shape[0] == column_expected.shape[0]
+        assert ca.profiles.row.factor_scores.shape[0] == row_expected.shape[0]
+        assert ca.profiles.column.factor_scores.shape[0] == column_expected.shape[0]
 
     def test_factor_scores_values(self, array, factor_scores):
         """Test correctness of factor scores matrices values."""
         row_expected, column_expected = factor_scores
         ca = CorrespondenceAnalysis(array.data)
-        assert np.allclose(ca.rows.factor_scores[:, :2], row_expected, atol=1e-3)
-        assert np.allclose(ca.columns.factor_scores[:, :2], column_expected, atol=1e-3)
+        assert np.allclose(
+            ca.profiles.row.factor_scores[:, :2], row_expected, atol=1e-3
+        )
+        assert np.allclose(
+            ca.profiles.column.factor_scores[:, :2], column_expected, atol=1e-3
+        )
 
     def test_profile_correlation_shape(self, array, profile_correlation):
         """Test profile correlation matrices shapes."""
         row_expected, column_expected = profile_correlation
         ca = CorrespondenceAnalysis(array.data)
-        assert ca.rows.cor.shape[0] == row_expected.shape[0]
-        assert ca.columns.cor.shape[0] == column_expected.shape[0]
+        assert ca.profiles.row.cor.shape[0] == row_expected.shape[0]
+        assert ca.profiles.column.cor.shape[0] == column_expected.shape[0]
 
     def test_profile_correlation_values(self, array, profile_correlation):
         """Test correctness of profile correlation values."""
         row_expected, column_expected = profile_correlation
         ca = CorrespondenceAnalysis(array.data)
-        assert np.allclose(ca.rows.cor[:, :2], row_expected, atol=1e-3)
-        assert np.allclose(ca.columns.cor[:, :2], column_expected, atol=1e-3)
+        assert np.allclose(ca.profiles.row.cor[:, :2], row_expected, atol=1e-3)
+        assert np.allclose(ca.profiles.column.cor[:, :2], column_expected, atol=1e-3)
 
     def test_profile_contribution_shape(self, array, profile_contribution):
         """Test profile contribution matrices shapes."""
         row_expected, column_expected = profile_contribution
         ca = CorrespondenceAnalysis(array.data)
-        assert ca.rows.ctr.shape[0] == row_expected.shape[0]
-        assert ca.columns.ctr.shape[0] == column_expected.shape[0]
+        assert ca.profiles.row.ctr.shape[0] == row_expected.shape[0]
+        assert ca.profiles.column.ctr.shape[0] == column_expected.shape[0]
 
     def test_profile_contribution_values(self, array, profile_contribution):
         """Test correctness of profile contribution values."""
         row_expected, column_expected = profile_contribution
         ca = CorrespondenceAnalysis(array.data)
 
-        assert np.allclose(ca.rows.ctr[:, :2], row_expected, atol=1e-3)
-        assert np.allclose(ca.columns.ctr[:, :2], column_expected, atol=1e-3)
+        assert np.allclose(ca.profiles.row.ctr[:, :2], row_expected, atol=1e-3)
+        assert np.allclose(ca.profiles.column.ctr[:, :2], column_expected, atol=1e-3)
 
     def test_eigenvalues_shape(self, array):
         """Test eigenvectors array shape."""
