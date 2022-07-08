@@ -248,7 +248,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 xytext=(f1, f2 * 0.99),
                 xycoords="data",
                 textcoords="offset points",
-                horizontalalingment="center",
+                horizontalalignment="center",
                 verticalalignment="bottom",
             )
 
@@ -268,7 +268,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 xytext=(g1, g2 * 0.99),
                 xycoords="data",
                 textcoords="offset points",
-                horizontalalingment="center",
+                horizontalalignment="center",
                 verticalalignment="bottom",
             )
 
