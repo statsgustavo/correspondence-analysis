@@ -6,6 +6,7 @@ import pandas as pd
 from IPython.display import display
 from matplotlib import pyplot as plt
 
+from src import reports
 from src.base import BaseCorrespondenceAnalysis
 
 
@@ -221,9 +222,15 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             columns=["Mass", "Inertia", "G1", "G2", "CTR1", "CTR2", "COR1", "COR2"],
         ).round(precision)
 
-        display(eigenvalues_summary)
-        display(rows_summary)
-        display(columns_summary)
+        report = reports.Report(
+            [
+                reports.Table("Eigenvalues", eigenvalues_summary),
+                reports.Table("Row profiles", rows_summary),
+                reports.Table("Column profiles", columns_summary),
+            ]
+        )
+
+        return report.render()
 
     def plot_factors(self):
         """
