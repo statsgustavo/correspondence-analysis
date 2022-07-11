@@ -1,5 +1,9 @@
-div .table {
+div {
     padding: 0 0;
+}
+
+div .table-container {
+    max-width: 50%;
 }
 
 h3 .table {

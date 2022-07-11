@@ -54,14 +54,14 @@ class Report:
         for table in self._tables:
             content += f"{table.template}\n"
 
-        return f"\t<body>{content}</div><\body>"
+        return f"\t<body>{content}</div></body>"
 
     def template(self):
         return f"""
         <html>
         {self._header()}
         {self._body()}
-        <html>
+        </html>
         """
 
     def render(self):
