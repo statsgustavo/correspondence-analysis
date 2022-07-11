@@ -12,8 +12,9 @@ class TestReport:
             .contents[0]
         )
         expected_css = (
-            "div .table {\n    padding: 0 0;\n}\n\nh3 .table "
-            + "{\n    border-style: hidden hidden solid hidden;\n}"
+            "div {\n    padding: 0 0;\n}\n\n"
+            + "div .table-container {\n    max-width: 50%;\n}\n\n"
+            + "h3 .table-name {\n    border-style: hidden hidden solid hidden;\n}"
         )
         assert css == expected_css
 
