@@ -4,6 +4,7 @@ div {
 
 div.tables-container {
     max-width: 50%;
+    border-style: hidden hidden solid hidden;
 }
 
 h3.table-name {
@@ -13,4 +14,5 @@ h3.table-name {
 
 h3.report-title {
     border-style: hidden hidden solid hidden;
+    max-width: 50%;
 }
