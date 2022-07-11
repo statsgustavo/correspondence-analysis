@@ -123,6 +123,12 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
             ),
         )
 
+        (
+            self.eigenvalues_summary,
+            self.rows_summary,
+            self.columns_summary,
+        ) = self._summary_tables()
+
     def _set_profile(
         self, mass, weights, distances, inertia, scores, correlation, contribution
     ):
@@ -182,50 +188,53 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
     def _angle(self):
         """Angle between the axis and the profile."""
 
+    def _summary_tables(self):
+        eigenvalues, rows, columns = (
+            pd.DataFrame(
+                {
+                    "Eigenvalues": self.eigenvalues.ravel(),
+                    "% Variance": self.eigenvalues.ravel() / self.total_inertia,
+                    "% Cummulative": self.eigenvalues.cumsum().ravel()
+                    / self.total_inertia,
+                },
+                index=[f"Profile {i + 1}" for i in range(self.eigenvalues.shape[0])],
+            ),
+            pd.DataFrame(
+                np.column_stack(
+                    [
+                        self.profiles.row.mass,
+                        self.profiles.row.inertia,
+                        self.profiles.row.factor_scores[:, :2],
+                        self.profiles.row.ctr[:, :2],
+                        self.profiles.row.cor[:, :2],
+                    ]
+                ),
+                index=self.rows.levels.ravel(),
+                columns=["Mass", "Inertia", "F1", "F2", "CTR1", "CTR2", "COR1", "COR2"],
+            ),
+            pd.DataFrame(
+                np.column_stack(
+                    [
+                        self.profiles.column.mass,
+                        self.profiles.column.inertia,
+                        self.profiles.column.factor_scores[:, :2],
+                        self.profiles.column.ctr[:, :2],
+                        self.profiles.column.cor[:, :2],
+                    ]
+                ),
+                index=self.columns.levels.ravel(),
+                columns=["Mass", "Inertia", "G1", "G2", "CTR1", "CTR2", "COR1", "COR2"],
+            ),
+        )
+        return eigenvalues, rows, columns
+
     def summary(self, precision=3):
         """Shows summary tables of the correspondence analysis."""
-        eigenvalues_summary = pd.DataFrame(
-            {
-                "Eigenvalues": self.eigenvalues.ravel(),
-                "% Variance": self.eigenvalues.ravel() / self.total_inertia,
-                "% Cummulative": self.eigenvalues.cumsum().ravel() / self.total_inertia,
-            },
-            index=[f"Profile {i + 1}" for i in range(self.eigenvalues.shape[0])],
-        ).round(precision)
-
-        rows_summary = pd.DataFrame(
-            np.column_stack(
-                [
-                    self.profiles.row.mass,
-                    self.profiles.row.inertia,
-                    self.profiles.row.factor_scores[:, :2],
-                    self.profiles.row.ctr[:, :2],
-                    self.profiles.row.cor[:, :2],
-                ]
-            ),
-            index=self.rows.levels.ravel(),
-            columns=["Mass", "Inertia", "F1", "F2", "CTR1", "CTR2", "COR1", "COR2"],
-        ).round(precision)
-
-        columns_summary = pd.DataFrame(
-            np.column_stack(
-                [
-                    self.profiles.column.mass,
-                    self.profiles.column.inertia,
-                    self.profiles.column.factor_scores[:, :2],
-                    self.profiles.column.ctr[:, :2],
-                    self.profiles.column.cor[:, :2],
-                ]
-            ),
-            index=self.columns.levels.ravel(),
-            columns=["Mass", "Inertia", "G1", "G2", "CTR1", "CTR2", "COR1", "COR2"],
-        ).round(precision)
-
         report = reports.Report(
             [
-                reports.Table("Eigenvalues", eigenvalues_summary),
-                reports.Table("Row profiles", rows_summary),
-                reports.Table("Column profiles", columns_summary),
+                reports.Table("Eigenvalues", self.eigenvalues_summary.round(precision)),
+                reports.Table("Row profiles", self.rows_summary.round(precision)),
+                reports.Table("Column profiles", self.columns_summary.round(precision)),
             ]
         )
 
