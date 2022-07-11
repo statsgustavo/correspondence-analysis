@@ -1,9 +1,42 @@
+from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
 
 from src.contingency_table import ContingencyTable
 from src.types import TableType
+
+
+@dataclass
+class OneDimensionResults:
+    """
+    Container class for storing correspondence analysis statistics of one dimension
+    of a contingency table for correspondence analysis.
+
+    :param mass:
+    :param weights:
+    :param distance:
+    :param inertia:
+    :param factor_scores:
+    :param cor:
+    :param ctr:
+    """
+
+    mass: np.ndarray
+    weights: np.ndarray
+    distance: np.ndarray
+    inertia: np.ndarray
+    factor_scores: np.ndarray
+    cor: np.ndarray
+    ctr: np.ndarray
+
+
+@dataclass
+class CorrespondenceAnalysisResults:
+    """Container class for correspondence analysis results."""
+
+    row: OneDimensionResults
+    column: OneDimensionResults
 
 
 class BaseCorrespondenceAnalysis(ContingencyTable):

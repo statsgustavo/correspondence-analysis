@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
@@ -6,39 +5,12 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from src import reports
-from src.base import BaseCorrespondenceAnalysis
-
-
-@dataclass
-class OneDimensionResults:
-    """
-    Container class for storing correspondence analysis statistics of one dimension
-    of a contingency table for correspondence analysis.
-
-    :param mass:
-    :param weights:
-    :param distance:
-    :param inertia:
-    :param factor_scores:
-    :param cor:
-    :param ctr:
-    """
-
-    mass: np.ndarray
-    weights: np.ndarray
-    distance: np.ndarray
-    inertia: np.ndarray
-    factor_scores: np.ndarray
-    cor: np.ndarray
-    ctr: np.ndarray
-
-
-@dataclass
-class CorrespondenceAnalysisResults:
-    """Container class for correspondence analysis results."""
-
-    row: OneDimensionResults
-    column: OneDimensionResults
+from src.base import (
+    BaseCorrespondenceAnalysis,
+    CorrespondenceAnalysisResults,
+    OneDimensionResults,
+)
+from src.visualization import plot_profile_coordiantes
 
 
 class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
@@ -246,51 +218,11 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         """
         _ = plt.figure(figsize=(10, 10))
         splot = plt.subplot(111)
-
-        splot.scatter(
-            self.profiles.row.factor_scores[:, 0].ravel(),
-            self.profiles.row.factor_scores[:, 1].ravel(),
-            s=1000 * self.profiles.row.inertia.ravel(),
-            label="Row profiles",
-            color="C0",
+        splot = plot_profile_coordiantes(
+            self.profiles.row,
+            self.profiles.column,
+            self.rows.levels,
+            self.columns.levels,
+            splot,
         )
-        for i, profile_name in enumerate(self.rows.levels.ravel()):
-            f1, f2 = self.profiles.row.factor_scores[i, :2]
-            splot.annotate(
-                profile_name,
-                (f1, f2),
-                xytext=(f1, f2 * 0.99),
-                xycoords="data",
-                textcoords="offset points",
-                horizontalalignment="center",
-                verticalalignment="bottom",
-            )
-
-        splot.scatter(
-            self.profiles.column.factor_scores[:, 0].ravel(),
-            self.profiles.column.factor_scores[:, 1].ravel(),
-            s=1000 * self.profiles.column.inertia.ravel(),
-            label="Column profiles",
-            color="C1",
-        )
-
-        for i, profile_name in enumerate(self.columns.levels.ravel()):
-            g1, g2 = self.profiles.column.factor_scores[i, :2]
-            splot.annotate(
-                profile_name,
-                (g1, g2),
-                xytext=(g1, g2 * 0.99),
-                xycoords="data",
-                textcoords="offset points",
-                horizontalalignment="center",
-                verticalalignment="bottom",
-            )
-
-        splot.spines["left"].set_position("center")
-        splot.spines["bottom"].set_position("center")
-        splot.spines["right"].set_visible(False)
-        splot.spines["top"].set_visible(False)
-        splot.get_xaxis().set_ticks([])
-        splot.get_yaxis().set_ticks([])
-
         return splot
