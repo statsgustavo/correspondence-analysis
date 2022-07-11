@@ -1,5 +1,3 @@
-import re
-
 import bs4
 from src.reports import Report, Table
 

@@ -3,7 +3,6 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-from IPython.display import display
 from matplotlib import pyplot as plt
 
 from src import reports
