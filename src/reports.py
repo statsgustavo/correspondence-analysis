@@ -43,24 +43,25 @@ class Report:
         self._tables = tables
 
     def _header(self):
-        return f"""
-            <header>
-                <style>{self._tables[0].style.css}</style>
-            </header>
-        """
+        return f"<style>{self._tables[0].style.css}</style>"
 
     def _body(self):
         content = '<div class="tables-container">\n'
         for table in self._tables:
             content += f"{table.template}\n"
 
-        return f"\t<body>{content}</div></body>"
+        return f"{content}</div>"
 
     def template(self):
         return f"""
         <html>
+        <header>
         {self._header()}
+        <header>
+        <body>
+        <h3 class="report-title">Correspondence analysis results</h3>
         {self._body()}
+        </body>
         <html>
         """
 

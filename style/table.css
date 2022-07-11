@@ -10,3 +10,7 @@ h3.table-name {
     border-style: hidden hidden solid hidden;
     max-width: 20%;
 }
+
+h3.report-title {
+    border-style: hidden hidden solid hidden;
+}
