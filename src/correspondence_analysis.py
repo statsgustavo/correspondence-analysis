@@ -237,7 +237,6 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
                 reports.Table("Column profiles", self.columns_summary.round(precision)),
             ]
         )
-
         return report.render()
 
     def plot_factors(self):
