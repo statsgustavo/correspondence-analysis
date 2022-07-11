@@ -2,10 +2,10 @@ div {
     padding: 0 0;
 }
 
-div .table-container {
+div.tables-container {
     max-width: 50%;
 }
 
-h3 .table-name {
+h3.table-name {
     border-style: hidden hidden solid hidden;
 }
