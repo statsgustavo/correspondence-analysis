@@ -8,4 +8,5 @@ div.tables-container {
 
 h3.table-name {
     border-style: hidden hidden solid hidden;
+    max-width: 20%;
 }
