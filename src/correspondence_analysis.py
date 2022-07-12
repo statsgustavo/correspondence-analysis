@@ -164,12 +164,23 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         eigenvalues, rows, columns = (
             pd.DataFrame(
                 {
-                    "Eigenvalues": self.eigenvalues.ravel(),
-                    "% Variance": self.eigenvalues.ravel() / self.total_inertia,
-                    "% Cummulative": self.eigenvalues.cumsum().ravel()
+                    "Inertia": self.eigenvalues.ravel()[:2],
+                    "Chi-square": self.table.sum() * self.eigenvalues.ravel()[:2],
+                    "Percent": self.eigenvalues.ravel()[:2] / self.total_inertia,
+                    "Cumulative": self.eigenvalues.ravel().cumsum()[:2]
                     / self.total_inertia,
                 },
-                index=[f"Profile {i + 1}" for i in range(self.eigenvalues.shape[0])],
+                index=["Dimension 1", "Dimension 2"],
+            ).pipe(
+                lambda d: pd.concat(
+                    [
+                        d,
+                        pd.DataFrame(
+                            d.sum(0).values, columns=["Total"], index=d.columns
+                        ).T,
+                    ],
+                    axis=0,
+                )
             ),
             pd.DataFrame(
                 np.column_stack(
