@@ -62,5 +62,8 @@ def plot_profile_coordiantes(
     splot.spines["top"].set_visible(False)
     splot.get_xaxis().set_ticks([])
     splot.get_yaxis().set_ticks([])
-    splot.axes.set_aspect("equal")
+    splot.axes.set_aspect("equal", adjustable="datalim")
+    splot.figure.suptitle("Correspondence analysis plot", fontsize=16, weight="bold")
+    splot.legend(bbox_to_anchor=(0.7, 1.1), ncol=2, frameon=False)
+
     return splot
