@@ -44,7 +44,7 @@ class Report:
     def __init__(self, tables: List[Table]):
         self._tables = tables
 
-    def _header(self):
+    def _head(self):
         html = (
             f"<style>{self._tables[0].style.css}</style>\n"
             + '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/'
@@ -63,9 +63,9 @@ class Report:
     def template(self):
         return f"""
         <html>
-        <header>
-        {self._header()}
-        <header>
+        <head>
+        {self._head()}
+        <head>
         <body>
         <h3 class="report-title">Correspondence analysis results</h3>
         {self._body()}
