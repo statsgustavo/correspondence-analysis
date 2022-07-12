@@ -13,7 +13,7 @@ class TestReport:
         )
         expected_css = (
             "div {\n    padding: 0 0;\n}\n\n"
-            + "div.tables-container {\n    max-width: 50%;\n"
+            + "div.container {\n    max-width: 50%;\n"
             + "    border-style: hidden hidden solid hidden;\n}\n\n"
             + "h3.table-name {\n    border-style: hidden hidden solid hidden;\n"
             + "    max-width: 20%;\n}\n\n"
@@ -26,13 +26,15 @@ class TestReport:
         tables = [Table("Contingency table fixture", dataframe.data)]
         report = Report(tables)
         html = bs4.BeautifulSoup(report.template(), features="html.parser").find(
-            "div", {"class": "tables-container"}
+            "div", {"class": "container"}
         )
 
         expected_html = bs4.BeautifulSoup(
-            '<div class="tables-container">\n'
+            '<div class="container">\n'
+            + '<div class="table">'
             + '<h3 id="contingency-table-fixture" class="table-name">Contingency table fixture</h3>\n'
             + f'<div id="contingency-table-fixture" class="table-content">{dataframe.data.to_html()}\n</div>\n'
+            + "</div>"
             + "</div>",
             features="html.parser",
         )

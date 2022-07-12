@@ -2,7 +2,7 @@ div {
     padding: 0 0;
 }
 
-div.tables-container {
+div.container {
     max-width: 50%;
     border-style: hidden hidden solid hidden;
 }
