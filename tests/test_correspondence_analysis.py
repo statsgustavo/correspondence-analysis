@@ -1,4 +1,7 @@
+# Tests for correspondence analysis
+
 import numpy as np
+import pytest
 from src.correspondence_analysis import CorrespondenceAnalysis
 
 
@@ -9,7 +12,7 @@ class TestCorrespondenceAnalysis:
         """Tests calculation of diagonal weights matrix."""
         expected_row, expected_column = weights
         ca = CorrespondenceAnalysis(array.data)
-        row, column = ca.profiles.row.weights, ca.profiles.column.weights
+        row, column = ca.profiles.row.weight, ca.profiles.column.weight
 
         assert row.shape == expected_row.shape
         assert column.shape == expected_column.shape
@@ -68,18 +71,16 @@ class TestCorrespondenceAnalysis:
         """Test factor scores matrices shapes."""
         row_expected, column_expected = factor_scores
         ca = CorrespondenceAnalysis(array.data)
-        assert ca.profiles.row.factor_scores.shape[0] == row_expected.shape[0]
-        assert ca.profiles.column.factor_scores.shape[0] == column_expected.shape[0]
+        assert ca.profiles.row.factor_score.shape[0] == row_expected.shape[0]
+        assert ca.profiles.column.factor_score.shape[0] == column_expected.shape[0]
 
     def test_factor_scores_values(self, array, factor_scores):
         """Test correctness of factor scores matrices values."""
         row_expected, column_expected = factor_scores
         ca = CorrespondenceAnalysis(array.data)
+        assert np.allclose(ca.profiles.row.factor_score[:, :2], row_expected, atol=1e-3)
         assert np.allclose(
-            ca.profiles.row.factor_scores[:, :2], row_expected, atol=1e-3
-        )
-        assert np.allclose(
-            ca.profiles.column.factor_scores[:, :2], column_expected, atol=1e-3
+            ca.profiles.column.factor_score[:, :2], column_expected, atol=1e-3
         )
 
     def test_profile_correlation_shape(self, array, profile_correlation):
@@ -122,5 +123,54 @@ class TestCorrespondenceAnalysis:
         np.allclose(ca.eigenvalues, eigenvalues, atol=1e-6)
 
     def test_plot_creation(self, array):
+        """Tests if correspondence analysis plot runs without errors."""
+        import matplotlib as mpl
+
         ca = CorrespondenceAnalysis(array.data)
-        ca.plot_factors()
+        splot = ca.plot_factors()
+        assert isinstance(splot, mpl.axes.Subplot)
+
+    def test_row_profiles_summary_table_creation(self, array):
+        """Tests layout of row profile summary table."""
+        ca = CorrespondenceAnalysis(array.data)
+        summary = ca.rows_summary
+        assert summary.columns.tolist() == [
+            "Mass",
+            "Inertia",
+            "F1",
+            "F2",
+            "CTR1",
+            "CTR2",
+            "COR1",
+            "COR2",
+        ]
+        assert summary.shape[0] == array.data.shape[0]
+
+    def test_column_profiles_summary_table_creation(self, array):
+        """Tests layout of row profile summary table."""
+        ca = CorrespondenceAnalysis(array.data)
+        summary = ca.columns_summary
+        assert summary.columns.tolist() == [
+            "Mass",
+            "Inertia",
+            "F1",
+            "F2",
+            "CTR1",
+            "CTR2",
+            "COR1",
+            "COR2",
+        ]
+        assert summary.shape[0] == array.data.shape[1]
+
+    def test_eigenvalues_summary_table_creation(self, array):
+        """Tests layout of row profile summary table."""
+        ca = CorrespondenceAnalysis(array.data)
+        summary = ca.inertia_summary
+        assert summary.index.tolist() == ["Dimension 1", "Dimension 2", "Total"]
+        assert summary.columns.tolist() == [
+            "Inertia",
+            "Chi-square",
+            "Percent",
+            "Cumulative",
+        ]
+        assert summary.shape[0] == 3
