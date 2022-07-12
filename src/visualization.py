@@ -29,7 +29,7 @@ def plot_profile_coordiantes(
         splot.annotate(
             profile_name,
             (f1, f2),
-            xytext=(f1, f2 * 0.99),
+            xytext=(0, -5),
             xycoords="data",
             textcoords="offset points",
             horizontalalignment="center",
@@ -49,7 +49,7 @@ def plot_profile_coordiantes(
         splot.annotate(
             profile_name,
             (g1, g2),
-            xytext=(g1, g2 * 0.99),
+            xytext=(0, -5),
             xycoords="data",
             textcoords="offset points",
             horizontalalignment="center",
