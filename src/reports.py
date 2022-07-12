@@ -46,8 +46,10 @@ class Report:
 
     def _header(self):
         html = (
-            f"<style>{self._tables[0].style.css}</style>"
-            + '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">'
+            f"<style>{self._tables[0].style.css}</style>\n"
+            + '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/'
+            + 'bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuz'
+            + 'KMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">'
         )
         return html
 
