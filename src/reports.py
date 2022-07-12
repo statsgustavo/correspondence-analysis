@@ -33,7 +33,7 @@ class Table:
     def template(self):
         id_ = "-".join(self._title.lower().split())
         return f"""
-        <div class="col-6">
+        <div class="g-col-6">
         <h3 id="{id_}" class="table-name">{self._title}</h3>
         <div id="{id_}" class="table-content">{self._table}</div>
         </div>
@@ -52,7 +52,7 @@ class Report:
         return html
 
     def _body(self):
-        content = '<div class="tables-container row justify-content-start">\n'
+        content = '<div class="tables-container grid">\n'
         for table in self._tables:
             content += f"{table.template}\n"
 
