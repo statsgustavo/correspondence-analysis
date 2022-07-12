@@ -13,6 +13,7 @@ class OneDimensionResults:
     Container class for storing correspondence analysis statistics of one dimension
     of a contingency table for correspondence analysis.
 
+    :param names:
     :param mass:
     :param weights:
     :param distance:
@@ -22,11 +23,12 @@ class OneDimensionResults:
     :param ctr:
     """
 
+    name: np.ndarray
     mass: np.ndarray
-    weights: np.ndarray
+    weight: np.ndarray
     distance: np.ndarray
     inertia: np.ndarray
-    factor_scores: np.ndarray
+    factor_score: np.ndarray
     cor: np.ndarray
     ctr: np.ndarray
 
