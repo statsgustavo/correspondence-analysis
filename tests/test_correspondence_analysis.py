@@ -164,10 +164,5 @@ class TestCorrespondenceAnalysis:
         ca = CorrespondenceAnalysis(array.data)
         summary = ca.inertia_summary
         assert summary.index.tolist() == ["Dimension 1", "Dimension 2", "Total"]
-        assert summary.columns.tolist() == [
-            "Inertia",
-            "Chi-square",
-            "Percent",
-            "Cumulative",
-        ]
+        assert summary.columns.tolist() == ["Inertia", "Chi-square", "Percent"]
         assert summary.shape[0] == 3
