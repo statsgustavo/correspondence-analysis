@@ -1,7 +1,6 @@
 # Tests for correspondence analysis
 
 import numpy as np
-import pytest
 from src.correspondence_analysis import CorrespondenceAnalysis
 
 
