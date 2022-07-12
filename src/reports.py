@@ -31,10 +31,10 @@ class Table:
 
     @property
     def template(self):
-        id = "-".join(self._title.lower().split())
+        id_ = "-".join(self._title.lower().split())
         return f"""
-            <h3 id="{id}" class="table-name">{self._title}</h3>
-            <div id="{id}" class="table-content">{self._table}</div>
+            <h3 id="{id_}" class="table-name">{self._title}</h3>
+            <div id="{id_}" class="table-content">{self._table}</div>
         """
 
 
