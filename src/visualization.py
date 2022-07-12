@@ -62,4 +62,5 @@ def plot_profile_coordiantes(
     splot.spines["top"].set_visible(False)
     splot.get_xaxis().set_ticks([])
     splot.get_yaxis().set_ticks([])
+    splot.axes.set_aspect("equal")
     return splot
