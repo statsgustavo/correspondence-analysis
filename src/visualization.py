@@ -1,4 +1,4 @@
-import numpy as np
+import matplotlib as mpl
 from matplotlib import pyplot as plt
 
 from src.base import OneDimensionResults
@@ -7,25 +7,25 @@ from src.base import OneDimensionResults
 def plot_profile_coordiantes(
     row_profiles: OneDimensionResults,
     column_profiles: OneDimensionResults,
-    row_profile_names: np.ndarray,
-    column_profile_names: np.ndarray,
-    splot: plt.subplot = None,
-):
-    row_coordinates = row_profiles.factor_scores[:, :2]
-    column_coordinates = column_profiles.factor_scores[:, :2]
+    splot: mpl.axes.Subplot = None,
+) -> mpl.axes.Subplot:
+    rows = row_profiles.factor_score[:, :2]
+    columns = column_profiles.factor_score[:, :2]
+    row_names = row_profiles.name.ravel()
+    column_names = column_profiles.name.ravel()
 
     if splot is None:
         splot = plt.subplot(111)
 
     splot.scatter(
-        row_coordinates[:, 0].ravel(),
-        row_coordinates[:, 1].ravel(),
+        rows[:, 0].ravel(),
+        rows[:, 1].ravel(),
         s=1000 * row_profiles.inertia.ravel(),
         label="Row profiles",
         color="C0",
     )
-    for i, profile_name in enumerate(row_profile_names.ravel()):
-        f1, f2 = row_coordinates[i, :2]
+    for i, profile_name in enumerate(row_names):
+        f1, f2 = rows[i, :2]
         splot.annotate(
             profile_name,
             (f1, f2),
@@ -37,15 +37,15 @@ def plot_profile_coordiantes(
         )
 
     splot.scatter(
-        column_coordinates[:, 0].ravel(),
-        column_coordinates[:, 1].ravel(),
+        columns[:, 0].ravel(),
+        columns[:, 1].ravel(),
         s=1000 * column_profiles.inertia.ravel(),
         label="Column profiles",
         color="C1",
     )
 
-    for i, profile_name in enumerate(column_profile_names.ravel()):
-        g1, g2 = column_coordinates[i, :2]
+    for i, profile_name in enumerate(column_names):
+        g1, g2 = columns[i, :2]
         splot.annotate(
             profile_name,
             (g1, g2),
