@@ -1,5 +1,3 @@
-# Tests for correspondence analysis
-
 import numpy as np
 from src.correspondence_analysis import CorrespondenceAnalysis
 
