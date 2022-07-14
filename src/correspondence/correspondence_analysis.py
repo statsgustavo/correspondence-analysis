@@ -3,9 +3,8 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-
 from src import reports
-from src.base import (
+from src.correspondence.base import (
     BaseCorrespondenceAnalysis,
     CorrespondenceAnalysisResults,
     OneDimensionResults,

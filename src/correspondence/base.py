@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from typing import Tuple
 
 import numpy as np
-
-from src.contingency_table import ContingencyTable
+from src.correspondence.contingency_table import ContingencyTable
 from src.types import TableType
 
 

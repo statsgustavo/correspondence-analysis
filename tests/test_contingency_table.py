@@ -1,4 +1,4 @@
-from src.contingency_table import ContingencyTable
+from src.correspondence.contingency_table import ContingencyTable
 
 
 class TestContingencyTable:

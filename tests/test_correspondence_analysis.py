@@ -1,5 +1,5 @@
 import numpy as np
-from src.correspondence_analysis import CorrespondenceAnalysis
+from src.correspondence.correspondence_analysis import CorrespondenceAnalysis
 
 
 class TestCorrespondenceAnalysis:

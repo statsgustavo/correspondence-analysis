@@ -1,7 +1,7 @@
 import matplotlib as mpl
 from matplotlib import pyplot as plt
 
-from src.base import OneDimensionResults
+from src.correspondence.base import OneDimensionResults
 
 
 def plot_profile_coordiantes(
