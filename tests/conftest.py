@@ -7,12 +7,55 @@ import pytest
 
 
 @dataclass
+class MetricMultidimensionalScalingFixtures:
+    """Container class for mMDS fixtures."""
+
+    distances: np.ndarray
+    centered: np.ndarray
+    eigenvalues: np.ndarray
+    eigenvectors: np.ndarray
+
+
+@dataclass
 class DatasetFixture:
     """Container class for data fixtures."""
 
     row_idx: np.ndarray
     column_idx: np.ndarray
     data: Union[pd.DataFrame, np.ndarray]
+
+
+@pytest.fixture(scope="session")
+def metric_mds():
+    data = np.array(
+        [
+            [0, 2 * np.sqrt(2), 2 * np.sqrt(2), 2 * np.sqrt(2), 2 * np.sqrt(2)],
+            [2 * np.sqrt(2), 0, 4, 4 * np.sqrt(2), 4],
+            [2 * np.sqrt(2), 4, 0, 4, 4 * np.sqrt(2)],
+            [2 * np.sqrt(2), 4 * np.sqrt(2), 4, 0, 4],
+            [2 * np.sqrt(2), 4, 4 * np.sqrt(2), 4, 0],
+        ]
+    )
+    centered = np.array(
+        [
+            [0, 0, 0, 0, 0],
+            [0, 8, 0, -8, 0],
+            [0, 0, 8, 0, -8],
+            [0, -8, 0, 8, 0],
+            [0, 0, -8, 0, 8],
+        ]
+    )
+    values = np.array([16, 16])
+    vectors = np.array(
+        [
+            [0, 0],
+            [0.5 * np.sqrt(2), 0],
+            [0, 0.5 * np.sqrt(2)],
+            [-0.5 * np.sqrt(2), 0],
+            [0, -0.5 * np.sqrt(2)],
+        ]
+    )
+    return MetricMultidimensionalScalingFixtures(data, centered, values, vectors)
 
 
 @pytest.fixture(scope="session")
