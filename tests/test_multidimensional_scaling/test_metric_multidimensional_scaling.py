@@ -42,14 +42,12 @@ class TestMetricMultidimensionalScaling:
     def test_spectral_decomposition(self, metric_mds):
         """Tests spectral decomposition of the double centered distance matrix."""
         data, centered = metric_mds.distances, metric_mds.centered
-        expected_eigenvalues, expected_eigenvectors = (
+        expected_eigenvalues, _ = (
             metric_mds.eigenvalues,
             metric_mds.eigenvectors,
         )
         mmds = mms.MetricMultidimensionalScaling(data)
-        eigenvalues, eigenvectors = mmds._spectral_decomposition(
-            centered
-        )  # pylint: disable=W0212
+        eigenvalues, _ = mmds._spectral_decomposition(centered)  # pylint: disable=W0212
         assert np.allclose(eigenvalues[eigenvalues > 1e-10], expected_eigenvalues)
         # assert np.allclose(eigenvectors[:, eigenvalues > 1e-10], expected_eigenvectors)
 
