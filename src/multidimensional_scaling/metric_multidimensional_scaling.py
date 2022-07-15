@@ -1,5 +1,5 @@
 import functools as ft
-from typing import Callable, Union
+from typing import Callable, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -56,11 +56,13 @@ class MetricMultidimensionalScaling:
         self.fn_metric = self._get_distance_metric_function(metric)
 
         if self._check_if_matrix_is_square(self.data):
-            self.distances = data.values
+            self.distances = self.data
         else:
             self.distances = self._compute_interpoint_distances(
                 self.fn_metric, self.data
             )
+
+        self._eigenvalues, self._eigenvectors = self._fit()
 
     def _check_if_matrix_is_square(self, data: np.ndarray) -> bool:
         """Checks if the number of rows and columns of the data matrix match."""
@@ -86,3 +88,42 @@ class MetricMultidimensionalScaling:
             fn_distance_metric = ft.partial(metrics.pairwise_distances, metric=metric)
 
         return fn_distance_metric
+
+    def _spectral_decomposition(
+        self, matrix: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        eigenvalues, eigenvectors = np.linalg.eig(matrix)
+        return eigenvalues, eigenvectors
+
+    def _lower_dimensional_coordinates(self, eigenvalues, eigenvectors):
+        is_positive = np.argwhere(eigenvalues > 1e-10).ravel()
+        eigenvalues, eigenvectors = (
+            eigenvalues[is_positive],
+            eigenvectors[:, is_positive],
+        )
+        lower_dimensional_matrix = eigenvectors @ np.diag(np.sqrt(eigenvalues))
+
+        return (
+            eigenvalues[: self._n_coordinates],
+            lower_dimensional_matrix[:, : self._n_coordinates],
+        )
+
+    def _fit(self):
+        nobs = self.distances.shape[0]
+        proximity_matrix = -0.5 * np.square(self.distances)
+
+        centering_matrix = np.eye(nobs) - (1 / nobs) * np.ones_like(proximity_matrix)
+        double_centered_matrix = centering_matrix @ proximity_matrix @ centering_matrix
+
+        eigenvalues, eigenvectors = self._lower_dimensional_coordinates(
+            *self._spectral_decomposition(double_centered_matrix)
+        )
+        return eigenvalues, eigenvectors
+
+    @property
+    def explained_variance(self):
+        return self._eigenvalues
+
+    @property
+    def principal_coordinates(self):
+        return self._eigenvectors
