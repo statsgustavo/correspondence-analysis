@@ -65,7 +65,7 @@ class MetricMultidimensionalScaling:
                 self.fn_metric, self.data
             )
 
-        self._eigenvalues, self._eigenvectors = self._fit()
+        self._explained_variance, self._matrix_approximation = self._fit()
 
     def _check_if_matrix_is_square(self, data: np.ndarray) -> bool:
         """Checks if the number of rows and columns of the data matrix match."""
@@ -98,18 +98,17 @@ class MetricMultidimensionalScaling:
         eigenvalues, eigenvectors = np.linalg.eig(matrix)
         return eigenvalues, eigenvectors
 
-    def _lower_dimensional_coordinates(self, eigenvalues, eigenvectors):
+    def _get_positive_eigenvalues_and_coordinates(self, eigenvalues, eigenvectors):
         is_positive = np.argwhere(eigenvalues > 1e-10).ravel()
         eigenvalues, eigenvectors = (
             eigenvalues[is_positive],
             eigenvectors[:, is_positive],
         )
-        lower_dimensional_matrix = eigenvectors @ np.diag(np.sqrt(eigenvalues))
 
-        return (
-            eigenvalues[: self._n_coordinates],
-            lower_dimensional_matrix[:, : self._n_coordinates],
-        )
+        root_eigenvalues = np.sqrt(eigenvalues)
+        approximation_matrix = eigenvectors @ np.diag(root_eigenvalues)
+
+        return root_eigenvalues, approximation_matrix
 
     def _fit(self):
         nobs = self.distances.shape[0]
@@ -118,7 +117,7 @@ class MetricMultidimensionalScaling:
         centering_matrix = np.eye(nobs) - (1 / nobs) * np.ones_like(proximity_matrix)
         double_centered_matrix = centering_matrix @ proximity_matrix @ centering_matrix
 
-        eigenvalues, eigenvectors = self._lower_dimensional_coordinates(
+        eigenvalues, eigenvectors = self._get_positive_eigenvalues_and_coordinates(
             *self._spectral_decomposition(double_centered_matrix)
         )
         return eigenvalues, eigenvectors
@@ -129,7 +128,7 @@ class MetricMultidimensionalScaling:
         Returns eigenvalues from spectral decomposition of the double centered distance
         matrix.
         """
-        return self._eigenvalues
+        return self._explained_variance[: self._n_coordinates]
 
     @property
     def principal_coordinates(self):
@@ -138,7 +137,7 @@ class MetricMultidimensionalScaling:
         positive-valued eigen values from the spectral decoposition of the double
         centered distance matrix.
         """
-        return self._eigenvectors
+        return self._matrix_approximation[:, : self._n_coordinates]
 
     def plot2d(self, annotate=False):
         """Two-dimensioal graphic representation of the data."""

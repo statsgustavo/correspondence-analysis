@@ -51,7 +51,11 @@ class TestMetricMultidimensionalScaling:
         assert np.allclose(eigenvalues[eigenvalues > 1e-10], expected_eigenvalues)
         # assert np.allclose(eigenvectors[:, eigenvalues > 1e-10], expected_eigenvectors)
 
-    def test_lower_dimensional_coordinates(self, metric_mds):
+    def test_get_positive_eigenvalues_and_coordinates(self, metric_mds):
+        """
+        Tests if only positive-valued eigenvectors and their corresponding eigenvectors
+        are being returned.
+        """
         data = metric_mds.distances
         expected_eigenvalues, expected_eigenvectors = (
             metric_mds.eigenvalues,
@@ -61,12 +65,13 @@ class TestMetricMultidimensionalScaling:
         (
             eigenvalues,
             eigenvectors,
-        ) = mmds._lower_dimensional_coordinates(  # pylint: disable=W0212
+        ) = mmds._get_positive_eigenvalues_and_coordinates(  # pylint: disable=W0212
             expected_eigenvalues, expected_eigenvectors
         )
 
-        assert eigenvalues.shape == (1,)
-        assert eigenvectors.shape == (expected_eigenvectors.shape[0], 1)
+        assert np.all(eigenvalues >= 0)
+        assert np.allclose(eigenvalues, np.sqrt(expected_eigenvalues))
+        assert eigenvectors.shape[1] == expected_eigenvalues.size
 
     # def test_eigenvalues(self, metric_mds):
     #     data = metric_mds.distances
