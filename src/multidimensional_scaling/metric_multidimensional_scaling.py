@@ -122,8 +122,17 @@ class MetricMultidimensionalScaling:
 
     @property
     def explained_variance(self):
+        """
+        Returns eigenvalues from spectral decomposition of the double centered distance
+        matrix.
+        """
         return self._eigenvalues
 
     @property
     def principal_coordinates(self):
+        """
+        Returns the first `n_cooordinates` eigenvectors corresponding to the greatest
+        positive-valued eigen values from the spectral decoposition of the double
+        centered distance matrix.
+        """
         return self._eigenvectors
