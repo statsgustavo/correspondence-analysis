@@ -141,7 +141,7 @@ class MetricMultidimensionalScaling:
         return self._matrix_approximation[:, : self._n_coordinates]
 
     def _explained_variance_summary(self):
-        total_variance = self.explained_variance.sum()
+        total_variance = self._explained_variance.sum()
         dim_variances = pd.DataFrame(
             np.column_stack(
                 [self.explained_variance, self.explained_variance / total_variance]
