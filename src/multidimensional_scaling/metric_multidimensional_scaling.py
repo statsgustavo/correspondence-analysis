@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn import metrics
 
+from ..reports import Report, Table
 from ..visualization import multidimensional_scaling_2d_plot
 from .errors import InvalidMetricError
 
@@ -138,6 +139,24 @@ class MetricMultidimensionalScaling:
         centered distance matrix.
         """
         return self._matrix_approximation[:, : self._n_coordinates]
+
+    def summary(self, precision=2):
+        """Returns a summary report of explained variances per dimension."""
+        total_variance = self.explained_variance.sum()
+        dim_variances = pd.DataFrame(
+            np.column_stack(
+                [self.explained_variance, self.explained_variance / total_variance]
+            ),
+            index=[f"Dimension {i + 1}" for i in range(self._n_coordinates)],
+            columns=["Variance", "Percent"],
+        )
+        totals = pd.DataFrame(
+            dim_variances.sum(0).values, columns=["Total"], index=dim_variances.index
+        )
+        summary_table = pd.concat([dim_variances, totals.T], axis=0).round(precision)
+
+        report = Report([Table("Explained variance", summary_table)])
+        return report.render()
 
     def plot2d(self, annotate=False):
         """Two-dimensioal graphic representation of the data."""
