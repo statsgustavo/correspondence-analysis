@@ -140,8 +140,7 @@ class MetricMultidimensionalScaling:
         """
         return self._matrix_approximation[:, : self._n_coordinates]
 
-    def summary(self, precision=2):
-        """Returns a summary report of explained variances per dimension."""
+    def _explained_variance_summary(self):
         total_variance = self.explained_variance.sum()
         dim_variances = pd.DataFrame(
             np.column_stack(
@@ -151,13 +150,16 @@ class MetricMultidimensionalScaling:
             columns=["Variance", "Percent"],
         )
         totals = pd.DataFrame(
-            dim_variances.sum(0).values, columns=["Total"], index=dim_variances.index
+            dim_variances.sum(0).values, columns=["Total"], index=dim_variances.columns
         )
-        summary_table = pd.concat([dim_variances, totals.T], axis=0).round(precision)
+        return pd.concat([dim_variances, totals.T], axis=0)
 
+    def summary(self, precision=2):
+        """Returns a summary report of explained variances per dimension."""
+        summary_table = self._explained_variance_summary()
         report = Report(
             "Metric multidimensional scaling results",
-            [Table("Explained variance", summary_table)],
+            [Table("Explained variance", summary_table.round(precision))],
         )
         return report.render()
 
