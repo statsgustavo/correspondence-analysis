@@ -147,7 +147,7 @@ class MetricMultidimensionalScaling:
                 [self.explained_variance, self.explained_variance / total_variance]
             ),
             index=[f"Dimension {i + 1}" for i in range(self._n_coordinates)],
-            columns=["Variance", "Percent"],
+            columns=["Variance", "Ratio"],
         )
         totals = pd.DataFrame(
             dim_variances.sum(0).values, columns=["Total"], index=dim_variances.columns

@@ -191,7 +191,7 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
         :returns table: pandas.DataFrame summary with inertia (eigenvalue), chi-square,
         percentage of explained variance and its cumulative value.
         """
-        column_names = ["Inertia", "Chi-square", "Percent"]
+        column_names = ["Inertia", "Chi-square", "Ratio"]
 
         n = self.table.sum()
         eigenvalues = self.eigenvalues.ravel()[:2]
