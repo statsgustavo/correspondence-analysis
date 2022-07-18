@@ -41,13 +41,12 @@ class Table:
 
 
 class Report:
-    def __init__(self, tables: List[Table]):
+    def __init__(self, title: str, tables: List[Table]):
         self._tables = tables
+        self._title = title
 
     def _head(self):
-        html = (
-            f"<style>{self._tables[0].style.css}</style>\n"
-        )
+        html = f"<style>{self._tables[0].style.css}</style>\n"
         return html
 
     def _body(self):
@@ -64,7 +63,7 @@ class Report:
         {self._head()}
         <head>
         <body>
-        <h3 class="report-title">Correspondence analysis results</h3>
+        <h3 class="report-title">{self._title}</h3>
         {self._body()}
         </body>
         <html>

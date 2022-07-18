@@ -155,7 +155,10 @@ class MetricMultidimensionalScaling:
         )
         summary_table = pd.concat([dim_variances, totals.T], axis=0).round(precision)
 
-        report = Report([Table("Explained variance", summary_table)])
+        report = Report(
+            "Metric multidimensional scaling results",
+            [Table("Explained variance", summary_table)],
+        )
         return report.render()
 
     def plot2d(self, annotate=False):

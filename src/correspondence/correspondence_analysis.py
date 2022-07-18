@@ -223,11 +223,12 @@ class CorrespondenceAnalysis(BaseCorrespondenceAnalysis):
     def summary(self, precision=3):
         """Shows summary tables of the correspondence analysis."""
         report = reports.Report(
+            "Correspondence analysis results",
             [
                 reports.Table("Inertia", self.inertia_summary.round(precision)),
                 reports.Table("Row profiles", self.rows_summary.round(precision)),
                 reports.Table("Column profiles", self.columns_summary.round(precision)),
-            ]
+            ],
         )
         return report.render()
 
