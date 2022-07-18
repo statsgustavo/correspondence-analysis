@@ -1,4 +1,7 @@
+from typing import Any, Dict
+
 import matplotlib as mpl
+import numpy as np
 from matplotlib import pyplot as plt
 
 from src.correspondence.base import OneDimensionResults
@@ -65,5 +68,49 @@ def plot_profile_coordiantes(
     splot.axes.set_aspect("equal", adjustable="datalim")
     splot.figure.suptitle("Correspondence analysis plot", fontsize=16, weight="bold")
     splot.legend(bbox_to_anchor=(0.7, 1.1), ncol=2, frameon=False)
+
+    return splot
+
+
+def multidimensional_scaling_2d_plot(
+    x: np.ndarray,
+    y: np.ndarray,
+    annot: np.ndarray = None,
+    splot: mpl.axes.Subplot = None,
+    fig_kws: Dict[str, Any] = None,
+    display_: bool = True,
+) -> mpl.axes.Subplot:
+    """
+    Two-dimensional graphic representation of data after performing multidimensional
+    scaling.
+    """
+    if fig_kws is None:
+        fig_kws = {"figsize": (12, 6)}
+
+    if splot is None:
+        _ = plt.figure(**fig_kws)
+        splot = plt.subplot(111)
+
+    splot.scatter(x, y)
+
+    if annot is not None:
+        for i in range(x.size):
+            splot.annotate(
+                annot[i],
+                (x[i], y[i]),
+                xytext=(-10, 10),
+                xycoords="data",
+                textcoords="offset points",
+            )
+
+    splot.axes.set_aspect("equal", adjustable="datalim")
+    splot.spines["right"].set_visible(False)
+    splot.spines["top"].set_visible(False)
+    splot.figure.suptitle(
+        "Multidimensional Scaling 2D Representiation", fontsize=16, weight="bold"
+    )
+
+    if display_:
+        plt.show()
 
     return splot

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import functools as ft
 from typing import Callable, Tuple, Union
 
@@ -5,6 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn import metrics
 
+from ..visualization import multidimensional_scaling_2d_plot
 from .errors import InvalidMetricError
 
 
@@ -136,3 +139,10 @@ class MetricMultidimensionalScaling:
         centered distance matrix.
         """
         return self._eigenvectors
+
+    def plot2d(self, annotate=False):
+        """Two-dimensioal graphic representation of the data."""
+        x, y = self.principal_coordinates[:, 0], self.principal_coordinates[:, 1]
+        annotations = self._original_data.index if annotate else None
+        splot = multidimensional_scaling_2d_plot(x, y, annotations)
+        return splot
