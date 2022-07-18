@@ -5,7 +5,7 @@ from src.reports import Report, Table
 class TestReport:
     def test_loading_css_style(self, dataframe):
         tables = [Table("Contingency table fixture", dataframe.data)]
-        report = Report(tables)
+        report = Report("Report title", tables)
         css = (
             bs4.BeautifulSoup(report.template(), features="html.parser")
             .find("style")
@@ -24,7 +24,7 @@ class TestReport:
 
     def test_table_content(self, dataframe):
         tables = [Table("Contingency table fixture", dataframe.data)]
-        report = Report(tables)
+        report = Report("Report title", tables)
         html = bs4.BeautifulSoup(report.template(), features="html.parser").find(
             "div", {"class": "container"}
         )
